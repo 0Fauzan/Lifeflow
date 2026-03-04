@@ -1,14 +1,16 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-lifeflow-blood-bank-secret-key-change-in-production'
+# ─── SECURITY ─────────────────────────────────────────────────
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-lifeflow-local-dev-key-change-in-prod')
 
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# ─── APPS ──────────────────────────────────────────────────────
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -23,6 +25,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',        # ← serves static files on Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -51,41 +54,64 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'lifeflow.wsgi.application'
 
-# ─── DATABASE — MySQL via MySQL Workbench ────────────────────
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'lifeflow_db',
-        'USER': 'root',           # your MySQL Workbench username
-        'PASSWORD': '1705',           # your MySQL Workbench password
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
-    }
-}
+# ─── DATABASE ──────────────────────────────────────────────────
+# Automatically uses PostgreSQL on Render (via DATABASE_URL env var)
+# Falls back to local MySQL when running on your PC
 
-# Custom user model
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    # ── RENDER / PRODUCTION: PostgreSQL ──────────────────────
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True,
+        )
+    }
+else:
+    # ── LOCAL: MySQL via MySQL Workbench ──────────────────────
+    DATABASES = {
+        'default': {
+            'ENGINE':   'django.db.backends.mysql',
+            'NAME':     'lifeflow_db',
+            'USER':     'root',
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),   # ← set your MySQL password here
+            'HOST':     '127.0.0.1',
+            'PORT':     '3306',
+            'OPTIONS':  {'charset': 'utf8mb4'},
+        }
+    }
+
+# ─── CUSTOM USER MODEL ─────────────────────────────────────────
 AUTH_USER_MODEL = 'core.User'
 
+# ─── PASSWORD VALIDATORS ───────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
 ]
 
+# ─── LOCALISATION ──────────────────────────────────────────────
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Asia/Kolkata'
-USE_I18N = True
-USE_TZ = True
+TIME_ZONE     = 'Asia/Kolkata'
+USE_I18N      = True
+USE_TZ        = True
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+# ─── STATIC FILES ──────────────────────────────────────────────
+STATIC_URL  = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# WhiteNoise compression for production (Render)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# ─── CRISPY FORMS ──────────────────────────────────────────────
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
+CRISPY_TEMPLATE_PACK          = 'bootstrap5'
+
+# ─── LOGIN ─────────────────────────────────────────────────────
+LOGIN_URL          = '/'
+LOGIN_REDIRECT_URL = '/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
-CRISPY_TEMPLATE_PACK = 'bootstrap5'
-
-LOGIN_URL = '/'
-LOGIN_REDIRECT_URL = '/'
