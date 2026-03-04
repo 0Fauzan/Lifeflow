@@ -57,7 +57,7 @@ DATABASES = {
         'NAME': 'lifeflow_db',
         'USER': 'root',           # your MySQL Workbench username
         'PASSWORD': '1705',           # your MySQL Workbench password
-        'HOST': '127.0.0.1',
+        'HOST': '0Fauzan.mysql.pythonanywhere-services.com',
         'PORT': '3306',
         'OPTIONS': {
             'charset': 'utf8mb4',
