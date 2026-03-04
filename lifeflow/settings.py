@@ -77,7 +77,7 @@ else:
             'ENGINE':   'django.db.backends.mysql',
             'NAME':     'lifeflow_db',
             'USER':     'root',
-            'PASSWORD': os.environ.get('DB_PASSWORD', ''),   # ← set your MySQL password here
+            'PASSWORD': os.environ.get('DB_PASSWORD', '1705'),   # ← set your MySQL password here
             'HOST':     '127.0.0.1',
             'PORT':     '3306',
             'OPTIONS':  {'charset': 'utf8mb4'},
