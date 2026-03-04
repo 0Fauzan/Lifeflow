@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Donations{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-title flex justify-between items-center flex-wrap gap-2">
+        <div><h1>Donation Records</h1><p>Approve or reject incoming blood donations</p></div>
+        <div class="filter-bar">
+            <a href="{% url 'admin_donations' %}"        class="btn btn-sm {% if not filter %}btn-primary{% else %}btn-outline{% endif %}">All</a>
+            <a href="{% url 'admin_donations' %}?s=pending"  class="btn btn-sm {% if filter == 'pending' %}btn-primary{% else %}btn-outline{% endif %}">Pending</a>
+            <a href="{% url 'admin_donations' %}?s=approved" class="btn btn-sm {% if filter == 'approved' %}btn-primary{% else %}btn-outline{% endif %}">Approved</a>
+            <a href="{% url 'admin_donations' %}?s=rejected" class="btn btn-sm {% if filter == 'rejected' %}btn-primary{% else %}btn-outline{% endif %}">Rejected</a>
+        </div>
+    </div>
+    <div class="glass-card">
+        <div class="card-header"><h2>Donations{% if filter %} — {{ filter|title }}{% endif %}</h2></div>
+        <div class="table-wrap">
+        <table class="data-table">
+            <thead><tr><th>#</th><th>Donor</th><th>City</th><th>Group</th><th>Units</th><th>Date</th><th>Camp</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+            {% for d in donations %}
+            <tr>
+                <td class="text-muted">#{{ d.id }}</td>
+                <td>{{ d.donor.user.get_full_name|default:d.donor.user.username }}</td>
+                <td>{{ d.donor.user.city|default:"—" }}</td>
+                <td><strong class="text-red">{{ d.blood_group }}</strong></td>
+                <td>{{ d.units_donated }}</td>
+                <td>{{ d.donation_date }}</td>
+                <td>{{ d.camp.name|default:"Walk-in" }}</td>
+                <td><span class="badge badge-{{ d.status }}">{{ d.get_status_display }}</span></td>
+                <td>
+                {% if d.status == 'pending' %}
+                    <a href="?approve={{ d.id }}" class="btn btn-success btn-sm">✓ Approve</a>
+                    <a href="?reject={{ d.id }}"  class="btn btn-danger btn-sm">✗ Reject</a>
+                {% else %}<span class="text-muted text-sm">—</span>{% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">💉</div><p>No donations found.</p></div></td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

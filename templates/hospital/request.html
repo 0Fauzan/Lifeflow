@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Request Blood{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-title"><h1>Request Blood</h1><p>Submit a blood request for a patient. Critical requests are handled first.</p></div>
+    <div class="grid-2" style="align-items:start;">
+        <div class="form-card">
+            <form method="POST">{% csrf_token %}
+                {% for field in form %}
+                <div class="form-group">
+                    <label>{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.name == 'blood_group' %}
+                    <p class="form-hint" id="avail-text"></p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <div class="flex gap-2 mt-2">
+                    <button type="submit" class="btn btn-primary">🩸 Submit Request</button>
+                    <a href="{% url 'hospital_dashboard' %}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+        <div class="glass-card" style="height:fit-content;">
+            <div class="card-header"><h2>📦 Blood Stock Reference</h2></div>
+            <div class="card-body">
+                <div class="blood-grid" style="grid-template-columns:repeat(4,1fr);gap:0.5rem;">
+                {% for bg, units in inventory.items %}
+                {% with st=units|stringformat:"s" %}
+                <div class="blood-card" style="padding:0.7rem 0.3rem;">
+                    <div class="blood-type" style="font-size:1rem;">{{ bg }}</div>
+                    <div class="blood-units" style="font-size:0.85rem;">{{ units }}</div>
+                    <span class="badge {% if units == 0 %}badge-empty{% elif units < 5 %}badge-critical{% elif units < 20 %}badge-low{% else %}badge-adequate{% endif %}" style="font-size:0.58rem;">
+                        {% if units == 0 %}Out{% elif units < 5 %}Critical{% elif units < 20 %}Low{% else %}OK{% endif %}
+                    </span>
+                </div>
+                {% endwith %}
+                {% endfor %}
+                </div>
+                <div class="alert alert-info mt-2" style="font-size:0.8rem;">You may request even if stock shows low — admin will coordinate.</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+const stock = {{ inventory|safe }};
+const select = document.querySelector('select[name="blood_group"]');
+const hint   = document.getElementById('avail-text');
+if (select && hint) {
+    select.addEventListener('change', function() {
+        const u = stock[this.value] ?? 0;
+        hint.textContent = u === 0 ? 'Currently out of stock ❌' : `${u} units currently available`;
+        hint.style.color = u < 5 ? '#f87171' : '#34d399';
+    });
+}
+</script>
+{% endblock %}

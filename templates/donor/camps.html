@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Donation Camps{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-title"><h1>Donation Camps</h1><p>Browse and register for upcoming blood donation camps near you</p></div>
+    <div class="glass-card">
+        <div class="card-header"><h2>Upcoming & Ongoing Camps</h2></div>
+        <div class="table-wrap">
+        <table class="data-table">
+            <thead><tr><th>#</th><th>Camp Name</th><th>Location</th><th>Date & Time</th><th>Organizer</th><th>Capacity</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+            {% for c in camps %}
+            <tr>
+                <td class="text-muted">#{{ c.id }}</td>
+                <td><strong style="color:var(--white);">{{ c.name }}</strong></td>
+                <td>{{ c.location }}, {{ c.city }}</td>
+                <td>{{ c.camp_date }}<br><small class="text-muted">{{ c.start_time }} – {{ c.end_time }}</small></td>
+                <td>{{ c.organizer|default:"—" }}</td>
+                <td>{{ c.registered_count }} / {{ c.capacity }}</td>
+                <td><span class="badge badge-{{ c.status }}">{{ c.get_status_display }}</span></td>
+                <td>
+                {% if c.id in my_regs %}
+                    <span class="badge badge-approved">✅ Registered</span>
+                {% elif c.registered_count >= c.capacity %}
+                    <span class="badge badge-empty">Full</span>
+                {% else %}
+                    <a href="?register={{ c.id }}" class="btn btn-primary btn-sm">Register</a>
+                {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8"><div class="empty-state"><div class="empty-icon">🏕️</div><p>No upcoming camps right now.</p></div></td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

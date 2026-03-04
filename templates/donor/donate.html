@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Donate Blood{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-title"><h1>Submit a Donation</h1><p>Log your blood donation. Admin will verify and update inventory.</p></div>
+    {% if not donor.is_eligible %}
+    <div class="alert alert-warning">⏳ You are currently ineligible. Last donation: <strong>{{ donor.last_donation }}</strong>. Next eligible: <strong>{{ donor.next_eligible_date }}</strong>.</div>
+    {% endif %}
+    <div class="grid-2" style="align-items:start;">
+        <div class="form-card">
+            <form method="POST">{% csrf_token %}
+                {% for field in form %}
+                <div class="form-group"><label>{{ field.label }}</label>{{ field }}{% if field.help_text %}<p class="form-hint">{{ field.help_text }}</p>{% endif %}</div>
+                {% endfor %}
+                <div class="flex gap-2 mt-2">
+                    <button type="submit" class="btn btn-primary" {% if not donor.is_eligible %}disabled{% endif %}>💉 Submit Donation</button>
+                    <a href="{% url 'donor_dashboard' %}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+        <div class="glass-card" style="height:fit-content;">
+            <div class="card-header"><h2>📋 Eligibility Rules</h2></div>
+            <div class="card-body">
+                <ul style="line-height:2.2;font-size:0.88rem;color:var(--text-muted);padding-left:1.1rem;list-style:disc;">
+                    <li>Must be 18–65 years old</li>
+                    <li>Weight at least 45 kg</li>
+                    <li>90 days since last donation</li>
+                    <li>Must be in good health</li>
+                    <li>No recent tattoos, surgery, or illness</li>
+                </ul>
+                <div class="alert alert-info mt-2">Your donation will be reviewed by an admin before inventory is updated.</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

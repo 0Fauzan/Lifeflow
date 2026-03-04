@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}My Requests{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-title flex justify-between items-center flex-wrap gap-2">
+        <div><h1>My Blood Requests</h1><p>Track all submitted blood requests</p></div>
+        <div class="filter-bar">
+            <a href="{% url 'hospital_my_requests' %}"           class="btn btn-sm {% if not filter %}btn-primary{% else %}btn-outline{% endif %}">All</a>
+            <a href="{% url 'hospital_my_requests' %}?s=pending"   class="btn btn-sm {% if filter == 'pending' %}btn-primary{% else %}btn-outline{% endif %}">Pending</a>
+            <a href="{% url 'hospital_my_requests' %}?s=fulfilled" class="btn btn-sm {% if filter == 'fulfilled' %}btn-primary{% else %}btn-outline{% endif %}">Fulfilled</a>
+            <a href="{% url 'hospital_my_requests' %}?s=rejected"  class="btn btn-sm {% if filter == 'rejected' %}btn-primary{% else %}btn-outline{% endif %}">Rejected</a>
+        </div>
+    </div>
+    <div class="glass-card">
+        <div class="card-header">
+            <h2>Requests{% if filter %} — {{ filter|title }}{% endif %}</h2>
+            <a href="{% url 'hospital_request' %}" class="btn btn-primary btn-sm">+ New Request</a>
+        </div>
+        <div class="table-wrap">
+        <table class="data-table">
+            <thead><tr><th>#</th><th>Patient</th><th>Group</th><th>Units</th><th>Urgency</th><th>Reason</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+            {% for r in requests %}
+            <tr>
+                <td class="text-muted">#{{ r.id }}</td>
+                <td>{{ r.patient_name }}</td>
+                <td><strong class="text-red">{{ r.blood_group }}</strong></td>
+                <td>{{ r.units_needed }}</td>
+                <td><span class="badge badge-urg-{{ r.urgency }}">{{ r.get_urgency_display }}</span></td>
+                <td class="truncate text-muted">{{ r.reason|default:"—" }}</td>
+                <td>{{ r.request_date|date:"d M Y" }}</td>
+                <td><span class="badge badge-{{ r.status }}">{{ r.get_status_display }}</span></td>
+                <td>
+                {% if r.status == 'pending' %}
+                    <a href="?cancel={{ r.id }}" class="btn btn-outline btn-sm" onclick="return confirm('Cancel this request?')">Cancel</a>
+                {% else %}<span class="text-muted">—</span>{% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📋</div><p>No requests found. <a href="{% url 'hospital_request' %}" class="text-red">Make a request.</a></p></div></td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

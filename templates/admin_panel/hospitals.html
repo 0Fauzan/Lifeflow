@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Hospitals{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-title"><h1>Registered Hospitals</h1><p>Verify and manage hospital accounts</p></div>
+    <div class="glass-card">
+        <div class="card-header"><h2>All Hospitals</h2></div>
+        <div class="table-wrap">
+        <table class="data-table">
+            <thead><tr><th>#</th><th>Hospital Name</th><th>Contact</th><th>City</th><th>License</th><th>Requests</th><th>Fulfilled</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+            {% for h in hospitals %}
+            <tr>
+                <td class="text-muted">#{{ h.id }}</td>
+                <td><strong>{{ h.hospital_name }}</strong><br><small class="text-muted">{{ h.user.get_full_name }}</small></td>
+                <td><small>{{ h.user.email }}</small><br><small class="text-muted">{{ h.user.phone|default:"—" }}</small></td>
+                <td>{{ h.user.city|default:"—" }}</td>
+                <td class="text-muted text-sm">{{ h.license_no|default:"—" }}</td>
+                <td>{{ h.total_requests }}</td>
+                <td>{{ h.fulfilled_count }}</td>
+                <td><span class="badge {% if h.verified %}badge-verified{% else %}badge-unverified{% endif %}">{% if h.verified %}✅ Verified{% else %}⏳ Unverified{% endif %}</span></td>
+                <td>
+                {% if not h.verified %}
+                    <a href="?verify={{ h.id }}" class="btn btn-success btn-sm">✓ Verify</a>
+                {% else %}
+                    <a href="?unverify={{ h.id }}" class="btn btn-outline btn-sm">Revoke</a>
+                {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🏥</div><p>No hospitals registered.</p></div></td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

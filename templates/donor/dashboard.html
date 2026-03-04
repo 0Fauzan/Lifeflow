@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% block title %}Donor Dashboard{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-title"><h1>Welcome, {{ user.get_full_name|default:user.username }} 👋</h1><p>Thank you for being a life-saver! Here's your overview.</p></div>
+    <div class="stats-grid">
+        <div class="stat-card blue"><div class="stat-icon">🩸</div><div class="stat-info"><h3>{{ donor.blood_group }}</h3><p>Blood Group</p></div></div>
+        <div class="stat-card green"><div class="stat-icon">💉</div><div class="stat-info"><h3>{{ donor.total_donations }}</h3><p>Total Donations</p></div></div>
+        <div class="stat-card {% if donor.is_eligible %}green{% else %}orange{% endif %}">
+            <div class="stat-icon">{% if donor.is_eligible %}✅{% else %}⏳{% endif %}</div>
+            <div class="stat-info"><h3>{% if donor.is_eligible %}Eligible{% else %}Waiting{% endif %}</h3><p>Donation Status</p></div>
+        </div>
+        <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-info"><h3 style="font-size:1.05rem;">{{ donor.last_donation|default:"Never" }}</h3><p>Last Donation</p></div></div>
+    </div>
+
+    {% if not donor.is_eligible and donor.last_donation %}
+    <div class="alert alert-warning">⏳ You can donate again after <strong>{{ donor.next_eligible_date }}</strong> (90-day cooldown).</div>
+    {% endif %}
+
+    <div class="grid-3">
+        <div>
+            <div class="glass-card mb-2">
+                <div class="card-body" style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+                    <a href="{% url 'donor_donate' %}"   class="btn btn-primary {% if not donor.is_eligible %}btn disabled{% endif %}">💉 Donate Blood</a>
+                    <a href="{% url 'donor_history' %}"  class="btn btn-outline">📋 Full History</a>
+                    <a href="{% url 'donor_camps' %}"    class="btn btn-outline">🏕️ Camps</a>
+                    <a href="{% url 'donor_profile' %}"  class="btn btn-outline">👤 Profile</a>
+                </div>
+            </div>
+            <div class="glass-card">
+                <div class="card-header"><h2>Recent Donations</h2><a href="{% url 'donor_history' %}" class="btn btn-outline btn-sm">All</a></div>
+                <div class="table-wrap"><table class="data-table">
+                    <thead><tr><th>#</th><th>Group</th><th>Units</th><th>Date</th><th>Status</th></tr></thead>
+                    <tbody>
+                    {% for d in donations %}<tr>
+                        <td class="text-muted">#{{ d.id }}</td>
+                        <td><strong class="text-red">{{ d.blood_group }}</strong></td>
+                        <td>{{ d.units_donated }}</td>
+                        <td>{{ d.donation_date }}</td>
+                        <td><span class="badge badge-{{ d.status }}">{{ d.get_status_display }}</span></td>
+                    </tr>{% empty %}
+                    <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">💉</div><p>No donations yet. <a href="{% url 'donor_donate' %}" class="text-red">Donate now!</a></p></div></td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table></div>
+            </div>
+        </div>
+        <div>
+            <div class="glass-card mb-2">
+                <div class="card-header"><h2>🏕️ Upcoming Camps</h2></div>
+                <div class="card-body" style="padding:0.75rem 1rem;">
+                {% for c in camps %}
+                <div style="padding:0.65rem 0;border-bottom:1px solid var(--dark-border);">
+                    <strong style="color:var(--white);">{{ c.name }}</strong><br>
+                    <small class="text-muted">📍 {{ c.location }}, {{ c.city }}</small><br>
+                    <small class="text-muted">📅 {{ c.camp_date }}</small>
+                </div>
+                {% empty %}<p class="text-muted text-sm" style="padding:0.5rem 0;">No upcoming camps.</p>{% endfor %}
+                </div>
+            </div>
+            <div class="glass-card">
+                <div class="card-header"><h2>🩸 Blood Stock</h2></div>
+                <div class="card-body">
+                    <div class="blood-grid" style="grid-template-columns:repeat(4,1fr);gap:0.5rem;">
+                    {% for inv in inventory %}
+                    <div class="blood-card" style="padding:0.7rem 0.3rem;">
+                        <div class="blood-type" style="font-size:1rem;">{{ inv.blood_group }}</div>
+                        <div class="blood-units" style="font-size:0.85rem;">{{ inv.units_available }}</div>
+                        <span class="badge badge-{{ inv.status_class }}" style="font-size:0.6rem;">{{ inv.stock_status }}</span>
+                    </div>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

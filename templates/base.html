@@ -1,0 +1,67 @@
+{% load static %}
+{% load custom_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LifeFlow{% endblock %} — Blood Bank</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{% if user.is_authenticated %}
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="nav-brand">
+        <span class="drop">🩸</span> LifeFlow
+    </div>
+
+    <ul class="nav-links">
+        {% if user.role == 'admin' %}
+            <li><a href="{% url 'admin_dashboard' %}" {% if request.resolver_match.url_name == 'admin_dashboard' %}class="active"{% endif %}>Dashboard</a></li>
+            <li><a href="{% url 'admin_donors' %}"    {% if request.resolver_match.url_name == 'admin_donors'    %}class="active"{% endif %}>Donors</a></li>
+            <li><a href="{% url 'admin_donations' %}" {% if request.resolver_match.url_name == 'admin_donations' %}class="active"{% endif %}>Donations</a></li>
+            <li><a href="{% url 'admin_requests' %}"  {% if request.resolver_match.url_name == 'admin_requests'  %}class="active"{% endif %}>Requests</a></li>
+            <li><a href="{% url 'admin_inventory' %}" {% if request.resolver_match.url_name == 'admin_inventory' %}class="active"{% endif %}>Inventory</a></li>
+            <li><a href="{% url 'admin_camps' %}"     {% if request.resolver_match.url_name == 'admin_camps'     %}class="active"{% endif %}>Camps</a></li>
+            <li><a href="{% url 'admin_hospitals' %}" {% if request.resolver_match.url_name == 'admin_hospitals' %}class="active"{% endif %}>Hospitals</a></li>
+            <li><a href="{% url 'admin_reports' %}"   {% if request.resolver_match.url_name == 'admin_reports'   %}class="active"{% endif %}>Reports</a></li>
+        {% elif user.role == 'donor' %}
+            <li><a href="{% url 'donor_dashboard' %}" {% if request.resolver_match.url_name == 'donor_dashboard' %}class="active"{% endif %}>Dashboard</a></li>
+            <li><a href="{% url 'donor_donate' %}"    {% if request.resolver_match.url_name == 'donor_donate'    %}class="active"{% endif %}>Donate</a></li>
+            <li><a href="{% url 'donor_history' %}"   {% if request.resolver_match.url_name == 'donor_history'   %}class="active"{% endif %}>History</a></li>
+            <li><a href="{% url 'donor_camps' %}"     {% if request.resolver_match.url_name == 'donor_camps'     %}class="active"{% endif %}>Camps</a></li>
+            <li><a href="{% url 'donor_profile' %}"   {% if request.resolver_match.url_name == 'donor_profile'   %}class="active"{% endif %}>Profile</a></li>
+        {% elif user.role == 'hospital' %}
+            <li><a href="{% url 'hospital_dashboard' %}"   {% if request.resolver_match.url_name == 'hospital_dashboard'   %}class="active"{% endif %}>Dashboard</a></li>
+            <li><a href="{% url 'hospital_request' %}"     {% if request.resolver_match.url_name == 'hospital_request'     %}class="active"{% endif %}>Request Blood</a></li>
+            <li><a href="{% url 'hospital_my_requests' %}" {% if request.resolver_match.url_name == 'hospital_my_requests' %}class="active"{% endif %}>My Requests</a></li>
+            <li><a href="{% url 'hospital_inventory' %}"   {% if request.resolver_match.url_name == 'hospital_inventory'   %}class="active"{% endif %}>Blood Stock</a></li>
+        {% endif %}
+    </ul>
+
+    <div class="nav-right">
+        <span class="nav-username">👤 {{ user.get_full_name|default:user.username }}</span>
+        <a href="{% url 'logout' %}" class="nav-logout">Logout</a>
+    </div>
+</nav>
+{% endif %}
+
+<!-- Messages -->
+{% if messages %}
+<div style="max-width:1320px;margin:1rem auto;padding:0 1.5rem;">
+    {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

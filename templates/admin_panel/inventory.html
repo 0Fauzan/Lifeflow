@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Blood Inventory{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-title"><h1>Blood Inventory</h1><p>View and manually adjust blood stock levels</p></div>
+    <div class="grid-2">
+        <div class="glass-card">
+            <div class="card-header"><h2>Current Stock Levels</h2></div>
+            <div class="card-body">
+                <div class="blood-grid" style="grid-template-columns:repeat(4,1fr);">
+                {% for inv in inventory %}
+                <div class="blood-card">
+                    <div class="blood-type">{{ inv.blood_group }}</div>
+                    <div class="blood-units">{{ inv.units_available }}</div>
+                    <div class="blood-label">units</div>
+                    <span class="badge badge-{{ inv.status_class }}">{{ inv.stock_status }}</span>
+                </div>
+                {% endfor %}
+                </div>
+                <div class="alert alert-info mt-2">ℹ️ Stock auto-updates when donations are approved or requests are fulfilled.</div>
+            </div>
+        </div>
+        <div class="form-card" style="height:fit-content;">
+            <h2 style="font-size:1rem;margin-bottom:1.25rem;color:var(--white);">⚙️ Manual Adjustment</h2>
+            <form method="POST">{% csrf_token %}
+                {% for field in form %}
+                <div class="form-group"><label>{{ field.label }}</label>{{ field }}</div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary btn-full">Update Inventory</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-title flex justify-between items-center">
+        <div>
+            <h1>Admin Dashboard</h1>
+            <p>Welcome back, {{ user.get_full_name|default:user.username }}! Here's today's overview.</p>
+        </div>
+        <span class="text-sm text-muted">{% now "l, d F Y" %}</span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card" style="--i:1"><div class="stat-icon">🧑</div><div class="stat-info"><h3>{{ total_donors }}</h3><p>Registered Donors</p></div></div>
+        <div class="stat-card green" style="--i:2"><div class="stat-icon">🏥</div><div class="stat-info"><h3>{{ total_hospitals }}</h3><p>Hospitals</p></div></div>
+        <div class="stat-card blue" style="--i:3"><div class="stat-icon">🩸</div><div class="stat-info"><h3>{{ total_units }}</h3><p>Units in Stock</p></div></div>
+        <div class="stat-card orange" style="--i:4"><div class="stat-icon">⏳</div><div class="stat-info"><h3>{{ pending_requests }}</h3><p>Pending Requests</p></div></div>
+        <div class="stat-card purple" style="--i:5"><div class="stat-icon">💉</div><div class="stat-info"><h3>{{ pending_donations }}</h3><p>Pending Donations</p></div></div>
+        <div class="stat-card green" style="--i:6"><div class="stat-icon">✅</div><div class="stat-info"><h3>{{ total_donations }}</h3><p>Approved Donations</p></div></div>
+    </div>
+
+    <!-- Blood Inventory -->
+    <div class="glass-card mb-3">
+        <div class="card-header">
+            <h2>🩸 Blood Inventory Overview</h2>
+            <a href="{% url 'admin_inventory' %}" class="btn btn-outline btn-sm">Manage</a>
+        </div>
+        <div class="card-body">
+            <div class="blood-grid">
+            {% for inv in inventory %}
+            <div class="blood-card">
+                <div class="blood-type">{{ inv.blood_group }}</div>
+                <div class="blood-units">{{ inv.units_available }}</div>
+                <div class="blood-label">units</div>
+                <span class="badge badge-{{ inv.status_class }}">{{ inv.stock_status }}</span>
+            </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-3">
+        <!-- Recent Requests -->
+        <div class="glass-card">
+            <div class="card-header">
+                <h2>Blood Requests</h2>
+                <a href="{% url 'admin_requests' %}" class="btn btn-outline btn-sm">View All</a>
+            </div>
+            <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th>#</th><th>Hospital</th><th>Patient</th><th>Group</th><th>Urgency</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                {% for r in recent_requests %}
+                <tr>
+                    <td class="text-muted">#{{ r.id }}</td>
+                    <td class="truncate">{% if r.requester.hospital_profile %}{{ r.requester.hospital_profile.hospital_name }}{% else %}{{ r.requester.username }}{% endif %}</td>
+                    <td>{{ r.patient_name }}</td>
+                    <td><strong class="text-red">{{ r.blood_group }}</strong></td>
+                    <td><span class="badge badge-urg-{{ r.urgency }}">{{ r.get_urgency_display }}</span></td>
+                    <td><span class="badge badge-{{ r.status }}">{{ r.get_status_display }}</span></td>
+                    <td>
+                    {% if r.status == 'pending' %}
+                        <a href="{% url 'admin_requests' %}?fulfill={{ r.id }}" class="btn btn-success btn-sm">✓</a>
+                        <a href="{% url 'admin_requests' %}?reject={{ r.id }}"  class="btn btn-danger btn-sm">✗</a>
+                    {% else %}<span class="text-muted">—</span>{% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📋</div><p>No requests yet.</p></div></td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        <!-- Pending Donations -->
+        <div class="glass-card">
+            <div class="card-header">
+                <h2>Pending Donations</h2>
+                <a href="{% url 'admin_donations' %}" class="btn btn-outline btn-sm">All</a>
+            </div>
+            <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Donor</th><th>Group</th><th>Date</th><th>Action</th></tr></thead>
+                <tbody>
+                {% for d in pending_don_list %}
+                <tr>
+                    <td>{{ d.donor.user.get_full_name|default:d.donor.user.username }}</td>
+                    <td><strong class="text-red">{{ d.blood_group }}</strong></td>
+                    <td>{{ d.donation_date }}</td>
+                    <td>
+                        <a href="{% url 'admin_donations' %}?approve={{ d.id }}" class="btn btn-success btn-sm">✓</a>
+                        <a href="{% url 'admin_donations' %}?reject={{ d.id }}"  class="btn btn-danger btn-sm">✗</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-center text-muted" style="padding:1.5rem;">No pending donations 🎉</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

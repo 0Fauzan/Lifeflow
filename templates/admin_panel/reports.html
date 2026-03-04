@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-title"><h1>Reports & Analytics</h1><p>Summary of donations, requests and blood stock</p></div>
+    <div class="stats-grid">
+        <div class="stat-card green"><div class="stat-icon">💉</div><div class="stat-info"><h3>{{ total_approved }}</h3><p>Approved Donations</p></div></div>
+        <div class="stat-card blue"><div class="stat-icon">🩸</div><div class="stat-info"><h3>{{ total_units_don }}</h3><p>Total Units Donated</p></div></div>
+        <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-info"><h3>{{ total_fulfilled }}</h3><p>Requests Fulfilled</p></div></div>
+        <div class="stat-card orange"><div class="stat-icon">💧</div><div class="stat-info"><h3>{{ total_units_ful }}</h3><p>Units Supplied</p></div></div>
+    </div>
+    <div class="grid-2">
+        <div class="glass-card">
+            <div class="card-header"><h2>📅 Monthly Donations (Last 6 Months)</h2></div>
+            <div class="table-wrap"><table class="data-table">
+                <thead><tr><th>Month</th><th>Donations</th><th>Units</th></tr></thead>
+                <tbody>
+                {% for m in monthly %}<tr><td>{{ m.month }}</td><td><strong>{{ m.count }}</strong></td><td>{{ m.total_units }}</td></tr>
+                {% empty %}<tr><td colspan="3" class="text-center text-muted" style="padding:1.5rem;">No data yet.</td></tr>{% endfor %}
+                </tbody>
+            </table></div>
+        </div>
+        <div class="glass-card">
+            <div class="card-header"><h2>🩸 By Blood Group</h2></div>
+            <div class="table-wrap"><table class="data-table">
+                <thead><tr><th>Group</th><th>Donations</th><th>Units</th></tr></thead>
+                <tbody>
+                {% for g in by_group %}<tr><td><strong class="text-red">{{ g.blood_group }}</strong></td><td>{{ g.count }}</td><td>{{ g.total_units }}</td></tr>
+                {% empty %}<tr><td colspan="3" class="text-center text-muted" style="padding:1.5rem;">No data yet.</td></tr>{% endfor %}
+                </tbody>
+            </table></div>
+        </div>
+        <div class="glass-card">
+            <div class="card-header"><h2>📋 Request Status Breakdown</h2></div>
+            <div class="table-wrap"><table class="data-table">
+                <thead><tr><th>Status</th><th>Count</th></tr></thead>
+                <tbody>
+                {% for rs in req_stats %}<tr><td><span class="badge badge-{{ rs.status }}">{{ rs.status|title }}</span></td><td><strong>{{ rs.count }}</strong></td></tr>{% endfor %}
+                </tbody>
+            </table></div>
+        </div>
+        <div class="glass-card">
+            <div class="card-header"><h2>🏆 Top Donors</h2></div>
+            <div class="table-wrap"><table class="data-table">
+                <thead><tr><th>Name</th><th>City</th><th>Group</th><th>Total</th></tr></thead>
+                <tbody>
+                {% for d in top_donors %}<tr>
+                    <td><strong>{{ d.user.get_full_name|default:d.user.username }}</strong></td>
+                    <td>{{ d.user.city|default:"—" }}</td>
+                    <td><strong class="text-red">{{ d.blood_group }}</strong></td>
+                    <td><strong>{{ d.total_donations }}</strong></td>
+                </tr>{% empty %}
+                <tr><td colspan="4" class="text-center text-muted" style="padding:1.5rem;">No donations yet.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
