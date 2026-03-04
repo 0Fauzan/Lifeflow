@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🩸 LifeFlow — Blood Bank Management System (Django)
 
 **Stack:** Django 4.2 + MySQL (Workbench) + Custom HTML/CSS (Dark Theme)
@@ -224,3 +225,6 @@ python manage.py seed               # Re-seed admin + inventory
 python manage.py shell              # Django interactive shell
 python manage.py createsuperuser    # Create another admin
 ```
+=======
+# Lifeflow
+>>>>>>> 346fda3ddb224db92859322227eecd3496283780
