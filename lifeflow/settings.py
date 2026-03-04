@@ -7,6 +7,7 @@ SECRET_KEY = 'django-insecure-lifeflow-blood-bank-secret-key-change-in-productio
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
