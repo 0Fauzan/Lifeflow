@@ -52,6 +52,10 @@ TEMPLATES = [
     },
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://lifeflow-byi4.onrender.com',
+]
+
 # ── DATABASE ──────────────────────────────────────────────────
 DATABASE_URL = os.environ.get('DATABASE_URL', '')
 
