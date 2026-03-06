@@ -63,7 +63,7 @@
                     </div>
                     <button type="submit" class="btn btn-primary btn-full" style="margin-top:0.5rem;">Login →</button>
                     <p class="text-sm text-muted text-center mt-2">
-                        Default admin: <strong>admin</strong> / <strong>admin123</strong>
+                      <!--Default admin: <strong>admin</strong> / <strong>admin123</strong-->>
                     </p>
                 </form>
             </div>
@@ -78,7 +78,7 @@
                 <!-- Donor Register -->
                 <div id="reg-donor">
                     <form method="POST">
-                        {% csrf_token %}
+                        {% csrf_token %
                         <input type="hidden" name="action" value="register_donor">
                         <div class="form-row">
                             <div class="form-group">
