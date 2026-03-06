@@ -1,7 +1,125 @@
-<<<<<<< HEAD
-# 🩸 LifeFlow — Blood Bank Management System (Django)
+<div align="center">
 
-**Stack:** Django 4.2 + MySQL (Workbench) + Custom HTML/CSS (Dark Theme)
+# 🩸 LifeFlow — Blood Bank Management System
+
+### *Connecting donors, hospitals and admins to save lives*
+
+[![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-lifeflow--byi4.onrender.com-e02040?style=for-the-badge)](https://lifeflow-byi4.onrender.com)
+[![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Django](https://img.shields.io/badge/Django-4.2-092E20?style=for-the-badge&logo=django&logoColor=white)](https://djangoproject.com)
+[![MySQL](https://img.shields.io/badge/MySQL-Workbench-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://mysql.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Render-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://render.com)
+
+<br/>
+
+> **LifeFlow** is a full-stack Blood Bank Management System built with Django and MySQL.
+> It features role-based access for **Admins**, **Donors**, and **Hospitals** with a
+> stunning dark glassmorphism UI.
+
+<br/>
+
+## 🌐 [Click here to access the live app →](https://lifeflow-byi4.onrender.com)
+
+> ⚠️ *Hosted on Render free tier — first load may take 30–50 seconds to wake up.*
+
+</div>
+
+---
+
+## 🔐 Demo Login Credentials
+
+| Role | Username | Password |
+|------|----------|----------|
+| 🔑 **Admin** | `admin` | `admin123` |
+| 🧑 **Donor** | Register from the login page | — |
+| 🏥 **Hospital** | Register from the login page | — |
+
+---
+
+## ✨ Features
+
+### 👨‍💼 Admin Portal
+- 📊 Dashboard with live blood stock overview
+- ✅ Approve / reject donations
+- 🩸 Fulfill / reject hospital blood requests (sorted by urgency)
+- 📦 Manual inventory management
+- 🧑 Browse and filter all donors
+- 🏕️ Create and manage donation camps
+- 🏥 Verify hospital accounts
+- 📈 Reports — monthly trends, top donors, blood group breakdown
+
+### 🧑 Donor Portal
+- 💉 Submit blood donations
+- 📋 Full donation history with status tracking
+- 🏕️ Browse and register for donation camps
+- ✅ Eligibility checker (90-day cooldown)
+- 👤 Profile management
+
+### 🏥 Hospital Portal
+- 🆘 Request blood with urgency levels (Low / Medium / High / Critical)
+- 📋 Track all requests with status updates
+- 📦 View real-time blood stock availability
+
+---
+
+## 🗄️ Database & DBMS Concepts
+
+| Concept | Implementation |
+|---------|---------------|
+| **Normalization (3NF)** | Separate User, Donor, Hospital models |
+| **Foreign Keys** | Donor→User, Donation→Donor, Request→Hospital |
+| **Views (4)** | blood_stock_view, eligible_donors_view, pending_requests_view, donor_summary_view |
+| **Stored Procedures (3)** | approve_donation, fulfill_request, reject_donation |
+| **Triggers (2)** | low_stock_alert (stock < 5), restore_donor_eligibility (90 days) |
+| **Transactions** | ACID-compliant donation approval and request fulfillment |
+| **Role-Based Access** | Custom `@role_required` decorator on all views |
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Backend** | Django 4.2 (Python 3.11) |
+| **Database (Local)** | MySQL 8.0 via MySQL Workbench |
+| **Database (Cloud)** | PostgreSQL via Render |
+| **Frontend** | HTML5, CSS3 (Glassmorphism), Vanilla JS |
+| **Fonts** | Sora + DM Sans (Google Fonts) |
+| **Static Files** | WhiteNoise |
+| **Deployment** | Render.com (Free tier) |
+
+---
+
+## 🚀 Run Locally
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/0Fauzan/Lifeflow.git
+cd Lifeflow
+
+# 2. Create virtual environment
+python -m venv venv
+venv\Scripts\activate        # Windows
+source venv/bin/activate     # Mac/Linux
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Create MySQL database in Workbench
+# Run: CREATE DATABASE lifeflow_db;
+
+# 5. Run migrations
+python manage.py makemigrations
+python manage.py migrate
+
+# 6. Seed default data
+python manage.py seed
+
+# 7. Start server
+python manage.py runserver
+```
+
+Open **http://127.0.0.1:8000** and login with `admin` / `admin123`
 
 ---
 
@@ -9,222 +127,57 @@
 
 ```
 lifeflow/
-│
-├── manage.py
-├── requirements.txt
-│
-├── lifeflow/               ← Django project config
-│   ├── settings.py         ← ⚠️ Edit DB credentials here
-│   ├── urls.py
-│   └── wsgi.py
-│
-├── core/                   ← Main Django app
-│   ├── models.py           ← All database models
-│   ├── views.py            ← All page logic (3 roles)
-│   ├── forms.py            ← All forms
-│   ├── urls.py             ← URL routes
-│   ├── admin.py            ← Django admin setup
-│   ├── templatetags/
-│   │   └── custom_tags.py  ← Custom template filters
+├── core/                    ← Main Django app
+│   ├── models.py            ← 9 database models
+│   ├── views.py             ← All views (3 roles)
+│   ├── forms.py             ← All forms
+│   ├── urls.py              ← URL routes
 │   └── management/
 │       └── commands/
-│           └── seed.py     ← Creates admin + inventory
-│
-├── templates/              ← All HTML pages
-│   ├── base.html           ← Shared layout + navbar
-│   ├── core/
-│   │   └── index.html      ← Login + Register page
-│   ├── admin_panel/        ← 8 admin pages
-│   ├── donor/              ← 5 donor pages
-│   └── hospital/           ← 4 hospital pages
-│
+│           └── seed.py      ← Creates admin + inventory
+├── templates/
+│   ├── base.html            ← Shared navbar layout
+│   ├── core/                ← Login + Register
+│   ├── admin_panel/         ← 8 admin pages
+│   ├── donor/               ← 5 donor pages
+│   └── hospital/            ← 4 hospital pages
 ├── static/
-│   └── css/
-│       └── style.css       ← Full glassmorphism design
-│
-└── sql/                    ← Extra SQL for Workbench
-    ├── 1_views.sql         ← 4 database views
-    └── 2_procedures_triggers.sql ← 3 procedures + 2 triggers
+│   └── css/style.css        ← Full glassmorphism design
+├── sql/
+│   ├── 1_views.sql          ← 4 database views
+│   └── 2_procedures_triggers.sql ← 3 procedures + 2 triggers
+└── lifeflow/
+    └── settings.py          ← Auto-switches MySQL ↔ PostgreSQL
 ```
 
 ---
 
-## ⚙️ Setup — Step by Step
+## 🗃️ Database Schema (9 Tables)
 
-### ✅ Step 1 — Create MySQL Database in Workbench
-
-1. Open **MySQL Workbench**
-2. Connect to your local instance
-3. Open a new query tab and run:
-
-```sql
-CREATE DATABASE lifeflow_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
-
-4. Click ⚡ to execute
-
----
-
-### ✅ Step 2 — Configure Database Credentials
-
-Open `lifeflow/settings.py` and edit the `DATABASES` section:
-
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME':     'lifeflow_db',
-        'USER':     'root',      # ← your MySQL username
-        'PASSWORD': '',          # ← your MySQL password (blank if none)
-        'HOST':     '127.0.0.1',
-        'PORT':     '3306',
-    }
-}
+core_user              ← Custom user model (admin/donor/hospital)
+core_donor             ← Donor profile + eligibility
+core_hospital          ← Hospital profile + verification
+core_bloodinventory    ← 8 blood group stock levels
+core_camp              ← Donation camps
+core_campregistration  ← Donor ↔ Camp registrations
+core_donation          ← Donation submissions
+core_bloodrequest      ← Hospital blood requests
+core_notification      ← System alerts
 ```
 
 ---
 
-### ✅ Step 3 — Create Virtual Environment & Install Packages
+## 📜 License
 
-Open a terminal in the `lifeflow/` folder:
-
-```bash
-# Create virtual environment
-python -m venv venv
-
-# Activate it
-# Windows:
-venv\Scripts\activate
-# Mac/Linux:
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-> ⚠️ **If mysqlclient fails on Windows**, run:
-> `pip install mysqlclient‑2.2.0‑cp311‑cp311‑win_amd64.whl`
-> Download from: https://www.lfd.uci.edu/~gohlke/pythonlibs/#mysqlclient
+This project was built for academic submission as part of a DBMS course project.
 
 ---
 
-### ✅ Step 4 — Run Django Migrations
+<div align="center">
 
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
+Made with ❤️ and 🩸
 
-This creates all 9 tables in `lifeflow_db` automatically.
+[![Live Demo](https://img.shields.io/badge/🚀%20Try%20it%20Live-lifeflow--byi4.onrender.com-e02040?style=for-the-badge)](https://lifeflow-byi4.onrender.com)
 
----
-
-### ✅ Step 5 — Seed Default Data
-
-```bash
-python manage.py seed
-```
-
-This creates:
-- ✅ Default admin account (`admin` / `admin123`)
-- ✅ Blood inventory for all 8 blood groups (A+, A-, B+, B-, AB+, AB-, O+, O-)
-
----
-
-### ✅ Step 6 — Run SQL Files in Workbench (Views + Procedures + Triggers)
-
-1. Open MySQL Workbench
-2. **File → Open SQL Script** → select `sql/1_views.sql` → click ⚡
-3. **File → Open SQL Script** → select `sql/2_procedures_triggers.sql` → click ⚡
-
----
-
-### ✅ Step 7 — Start the Server
-
-```bash
-python manage.py runserver
-```
-
-Open your browser:
-```
-http://127.0.0.1:8000/
-```
-
----
-
-## 🔐 Default Login
-
-| Role     | Username  | Password  |
-|----------|-----------|-----------|
-| **Admin** | admin    | admin123  |
-
-> Register Donor and Hospital accounts from the login page.
-
----
-
-## 🗃️ Django Models → MySQL Tables
-
-| Django Model     | MySQL Table              |
-|------------------|--------------------------|
-| `User`           | `core_user`              |
-| `Donor`          | `core_donor`             |
-| `Hospital`       | `core_hospital`          |
-| `BloodInventory` | `core_bloodinventory`    |
-| `Camp`           | `core_camp`              |
-| `CampRegistration`| `core_campregistration` |
-| `Donation`       | `core_donation`          |
-| `BloodRequest`   | `core_bloodrequest`      |
-| `Notification`   | `core_notification`      |
-
----
-
-## 🗄️ DBMS Concepts Used
-
-| Concept               | Where / How                                                     |
-|-----------------------|-----------------------------------------------------------------|
-| **Normalization (3NF)**| Separate User, Donor, Hospital models                         |
-| **Primary Keys**       | Auto-generated by Django (`id` field)                         |
-| **Foreign Keys**       | donor→user, donation→donor, request→user, etc.               |
-| **ENUM Types**         | Blood groups, urgency, status, role, gender                   |
-| **JOINs**              | `select_related()` and `annotate()` in views                  |
-| **Views (4)**          | blood_stock_view, eligible_donors_view, pending_requests_view, donor_summary_view |
-| **Stored Procedures (3)**| approve_donation, fulfill_request, reject_donation          |
-| **Triggers (2)**       | low_stock_alert, restore_donor_eligibility                    |
-| **Transactions**       | `with transaction.atomic():` in approve/fulfill flows         |
-| **Django ORM**         | Full model-based queries, migrations, relationships           |
-| **Role-Based Access**  | Custom `@role_required` decorator on all views                |
-
----
-
-## 🎯 ER Diagram (for Viva)
-
-In MySQL Workbench:
-1. Click **Database → Reverse Engineer**
-2. Connect → Select `lifeflow_db` → Execute
-3. ✅ Full ER diagram auto-generated!
-
----
-
-## 💡 Viva Tips
-
-1. **Show migrations:** `python manage.py showmigrations` — shows Django's version control for DB
-2. **Explain ORM vs SQL:** Django ORM auto-generates SQL; stored procedures add extra business logic
-3. **Demo a trigger:** Approve a donation that drops stock below 5 — admin notification appears automatically
-4. **Run a procedure directly in Workbench:** `CALL approve_donation(1, 1);`
-5. **Show all 3 dashboards:** Login as Admin, Donor, Hospital separately
-
----
-
-## 🛠️ Useful Commands
-
-```bash
-python manage.py runserver          # Start server
-python manage.py makemigrations     # After model changes
-python manage.py migrate            # Apply migrations
-python manage.py seed               # Re-seed admin + inventory
-python manage.py shell              # Django interactive shell
-python manage.py createsuperuser    # Create another admin
-```
-=======
-# Lifeflow
->>>>>>> 346fda3ddb224db92859322227eecd3496283780
+</div>
