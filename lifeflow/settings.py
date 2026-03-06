@@ -54,20 +54,42 @@ TEMPLATES = [
 WSGI_APPLICATION = 'lifeflow.wsgi.application'
 
 # ─── DATABASE — MySQL via MySQL Workbench ────────────────────
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'lifeflow_db',
-        'USER': 'root',           # your MySQL Workbench username
-        'PASSWORD': '1705',           # your MySQL Workbench password
-        'HOST': '0Fauzan.mysql.pythonanywhere-services.com',
-        'PORT': '3306',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
-    }
-}
+import dj_database_url
 
+DATABASE_URL = os.environ.get('DATABASE_URL', '')
+
+if DATABASE_URL and DATABASE_URL.startswith('postgres'):
+    # ── RENDER — Force PostgreSQL ──────────────────────────
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+        )
+    }
+else:
+    # ── LOCAL — MySQL ──────────────────────────────────────
+    import pymysql
+    pymysql.install_as_MySQLdb()
+    DATABASES = {
+        'default': {
+            'ENGINE':   'django.db.backends.mysql',
+            'NAME':      os.environ.get('DB_NAME',     'lifeflow_db'),
+            'USER':      os.environ.get('DB_USER',     'root'),
+            'PASSWORD':  os.environ.get('DB_PASSWORD', ''),
+            'HOST':      os.environ.get('DB_HOST',     '127.0.0.1'),
+            'PORT':      os.environ.get('DB_PORT',     '3306'),
+            'OPTIONS':   {'charset': 'utf8mb4'},
+        }
+    }
+```
+
+---
+
+### File 3 — Check for a `.env` file
+
+Look in your project folder for a file called `.env`. If it exists, open it and check if it has something like:
+```
+DB_HOST=0Fauzan.mysql.pythonanywhere-services.com
 # Custom user model
 AUTH_USER_MODEL = 'core.User'
 
